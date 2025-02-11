@@ -8,10 +8,10 @@ export class UpdateProfileDto {
   @IsString()
   fullName?: string;
 
-  @ApiProperty()
-  @IsOptional()
-  @IsEmail()
-  email?: string;
+  // @ApiProperty()
+  // @IsOptional()
+  // @IsEmail()
+  // email?: string;
 
   // Add other fields (e.g. phone, avatar) as needed
 }

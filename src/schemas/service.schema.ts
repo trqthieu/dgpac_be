@@ -6,7 +6,7 @@ export type ServiceDocument = Service & Document;
 
 @Schema({ timestamps: true })
 export class Service {
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'users', required: true })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: true })
   expertId: string;
 
   @Prop({ required: true })

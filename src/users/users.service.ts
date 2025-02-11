@@ -7,13 +7,18 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from '../schemas/user.schema';
 import * as bcrypt from 'bcrypt';
-import { Appointment, AppointmentDocument, AppointmentStatus } from 'src/schemas/appointment.schema';
+import {
+  Appointment,
+  AppointmentDocument,
+  AppointmentStatus,
+} from 'src/schemas/appointment.schema';
 import { Chat, ChatDocument } from 'src/schemas/chat.schema';
 import { Review, ReviewDocument } from 'src/schemas/review.schema';
 import { BookAppointmentDto } from './dto/book-appointment.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { ChatMessageDto } from './dto/chat-message.dto';
 import { ReviewDto } from './dto/review.dto';
+import { Service } from 'src/schemas/service.schema';
 
 @Injectable()
 export class UsersService {
@@ -23,6 +28,7 @@ export class UsersService {
     private appointmentModel: Model<AppointmentDocument>,
     @InjectModel(Chat.name) private chatModel: Model<ChatDocument>,
     @InjectModel(Review.name) private reviewModel: Model<ReviewDocument>,
+    @InjectModel(Service.name) private serviceModel: Model<Service>,
   ) {}
 
   async validateUser(email: string, password: string): Promise<any> {
@@ -147,7 +153,16 @@ export class UsersService {
   }
 
   async getAppointments(userId: string): Promise<AppointmentDocument[]> {
-    return this.appointmentModel.find({ userId: userId }).exec();
+    return this.appointmentModel
+      .find({ userId: userId })
+      .populate(['serviceId', 'expertId'])
+      .exec();
+  }
+  async getAppointmentDetail(id: string): Promise<Appointment> {
+    return this.appointmentModel
+      .findOne({ _id: id })
+      .populate(['serviceId', 'expertId'])
+      .exec();
   }
 
   async sendChatMessage(
@@ -163,7 +178,10 @@ export class UsersService {
   }
 
   async getChatHistory(userId: string): Promise<ChatDocument[]> {
-    return this.chatModel.find({ userId: userId }).sort({ createdAt: -1 }).exec();
+    return this.chatModel
+      .find({ userId: userId })
+      .sort({ createdAt: -1 })
+      .exec();
   }
 
   async postReview(userId: string, dto: ReviewDto): Promise<ReviewDocument> {
@@ -174,5 +192,30 @@ export class UsersService {
       comment: dto.comment,
     });
     return review.save();
+  }
+
+  async listServices(): Promise<Service[]> {
+    return this.serviceModel
+      .find()
+      .populate({
+        path: 'expertId',
+      })
+      .exec();
+  }
+  async getServiceDetail(id: string): Promise<Service> {
+    return this.serviceModel
+      .findById(id)
+      .populate({
+        path: 'expertId',
+      })
+      .exec();
+  }
+
+  async listExperts(): Promise<User[]> {
+    return this.userModel.find({ role: 'expert' }).exec();
+  }
+
+  async getExpertDetail(id: string): Promise<User> {
+    return this.userModel.findOne({ _id: id, role: 'expert' }).exec();
   }
 }

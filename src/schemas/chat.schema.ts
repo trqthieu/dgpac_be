@@ -7,7 +7,7 @@ export type ChatDocument = Chat & Document;
 @Schema({ timestamps: true })
 export class Chat {
   // Reference to the user who sent the message
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'users', required: true })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: true })
   userId: string;
 
   @Prop({ required: true })

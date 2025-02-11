@@ -13,13 +13,13 @@ export enum AppointmentStatus {
 
 @Schema({ timestamps: true })
 export class Appointment {
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'users', required: true })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: true })
   userId: string; // Reference to the User booking the appointment
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'users', required: false })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: false })
   expertId?: string; // Optional reference if user selects a specific expert
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'services', required: true })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Service', required: true })
   serviceId: string; // The ID of the service booked
 
   @Prop({ required: true })

@@ -1,5 +1,14 @@
 // src/users/users.controller.ts
-import { Controller, Get, Put, Post, Body, Req, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Put,
+  Post,
+  Body,
+  Req,
+  UseGuards,
+  Param,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { UpdateProfileDto } from './dto/update-profile.dto';
@@ -18,7 +27,7 @@ export class UsersController {
   @Get('profile')
   async getProfile(@Req() req) {
     console.log(req.user);
-    
+
     return this.usersService.getProfile(req.user._id);
   }
 
@@ -40,6 +49,11 @@ export class UsersController {
     return this.usersService.getAppointments(req.user.id);
   }
 
+  @Get('appointments:id')
+  async getAppointmentDetail(@Req() req, @Param('id') id: string) {
+    return this.usersService.getAppointmentDetail(id);
+  }
+
   // Chat endpoints: send message and get history
   @Post('chat')
   async sendChatMessage(@Req() req, @Body() dto: ChatMessageDto) {
@@ -55,5 +69,25 @@ export class UsersController {
   @Post('reviews')
   async postReview(@Req() req, @Body() dto: ReviewDto) {
     return this.usersService.postReview(req.user._id, dto);
+  }
+
+  @Get('services')
+  async listServices(@Req() req) {
+    return this.usersService.listServices();
+  }
+
+  @Get('services/:id')
+  async getServiceDetail(@Req() req, @Param('id') id: string) {
+    return this.usersService.getServiceDetail(id);
+  }
+
+  @Get('experts')
+  async listExperts(@Req() req) {
+    return this.usersService.listExperts();
+  }
+
+  @Get('experts/:id')
+  async getExpertDetail(@Req() req, @Param('id') id: string) {
+    return this.usersService.getExpertDetail(id);
   }
 }
