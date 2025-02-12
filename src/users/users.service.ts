@@ -194,6 +194,14 @@ export class UsersService {
     return review.save();
   }
 
+  async getReviewsByExpert(expertId: string): Promise<ReviewDocument[]> {
+    const reviews = await this.reviewModel
+      .find({ expertId: expertId })
+      .populate('userId', 'fullName email') // Optionally populate user info
+      .exec();
+    return reviews;
+  }
+
   async listServices(): Promise<Service[]> {
     return this.serviceModel
       .find()

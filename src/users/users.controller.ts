@@ -71,6 +71,11 @@ export class UsersController {
     return this.usersService.postReview(req.user._id, dto);
   }
 
+  @Get('reviews/experts/:expertId')
+  async getReviewsByExpert(@Param('expertId') expertId: string) {
+    return this.usersService.getReviewsByExpert(expertId);
+  }
+
   @Get('services')
   async listServices(@Req() req) {
     return this.usersService.listServices();

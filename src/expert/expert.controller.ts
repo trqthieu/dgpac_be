@@ -16,6 +16,7 @@ import { CreateServiceDto } from './dto/create-service.dto';
 import { UpdateServiceDto } from './dto/update-service.dto';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { UpdateProfileDto } from 'src/users/dto/update-profile.dto';
 
 @Controller('expert')
 @UseGuards(JwtAuthGuard)
@@ -30,7 +31,7 @@ export class ExpertController {
   }
 
   @Put('profile')
-  async updateProfile(@Req() req, @Body() updateData: any) {
+  async updateProfile(@Req() req, @Body() updateData: UpdateProfileDto) {
     return this.expertService.updateProfile(req.user, updateData);
   }
 
@@ -63,6 +64,11 @@ export class ExpertController {
   @Get('appointments')
   async listAppointments(@Req() req) {
     return this.expertService.listAppointments(req.user);
+  }
+
+  @Get('appointments/:id')
+  async getAppointmentDetail(@Req() req, @Param('id') id: string) {
+    return this.expertService.getAppointmentDetail(id);
   }
 
   @Patch('appointments/:id/accept')

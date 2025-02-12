@@ -1,19 +1,29 @@
 // src/admin/admin.service.ts
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from '../schemas/user.schema';
 import { Service, ServiceDocument } from '../schemas/service.schema';
-import { Appointment, AppointmentDocument, AppointmentStatus } from '../schemas/appointment.schema';
+import {
+  Appointment,
+  AppointmentDocument,
+  AppointmentStatus,
+} from '../schemas/appointment.schema';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
+import { UpdateProfileDto } from 'src/users/dto/update-profile.dto';
 
 @Injectable()
 export class AdminService {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     @InjectModel(Service.name) private serviceModel: Model<ServiceDocument>,
-    @InjectModel(Appointment.name) private appointmentModel: Model<AppointmentDocument>,
+    @InjectModel(Appointment.name)
+    private appointmentModel: Model<AppointmentDocument>,
   ) {}
 
   // Dashboard: aggregate appointment stats and total revenue
@@ -21,11 +31,23 @@ export class AdminService {
     const now = new Date();
     let startDate: Date;
     if (period === 'week') {
-      startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7);
+      startDate = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate() - 7,
+      );
     } else if (period === 'month') {
-      startDate = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
+      startDate = new Date(
+        now.getFullYear(),
+        now.getMonth() - 1,
+        now.getDate(),
+      );
     } else if (period === 'year') {
-      startDate = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
+      startDate = new Date(
+        now.getFullYear() - 1,
+        now.getMonth(),
+        now.getDate(),
+      );
     } else {
       throw new BadRequestException('Invalid period');
     }
@@ -36,7 +58,9 @@ export class AdminService {
         $match: {
           createdAt: { $gte: startDate },
           // Consider appointments that are confirmed or completed
-          status: { $in: [AppointmentStatus.Confirmed, AppointmentStatus.Completed] },
+          status: {
+            $in: [AppointmentStatus.Confirmed, AppointmentStatus.Completed],
+          },
         },
       },
       {
@@ -66,7 +90,9 @@ export class AdminService {
 
   async createUser(dto: CreateUserDto): Promise<UserDocument> {
     // Check if a user with the given email already exists
-    const existingUser = await this.userModel.findOne({ email: dto.email }).exec();
+    const existingUser = await this.userModel
+      .findOne({ email: dto.email })
+      .exec();
     if (existingUser) {
       throw new BadRequestException('User with this email already exists');
     }
@@ -92,7 +118,9 @@ export class AdminService {
   }
 
   async updateUser(id: string, updateDto: any): Promise<UserDocument> {
-    const user = await this.userModel.findByIdAndUpdate(id, updateDto, { new: true }).exec();
+    const user = await this.userModel
+      .findByIdAndUpdate(id, updateDto, { new: true })
+      .exec();
     if (!user) throw new NotFoundException('User not found');
     return user;
   }
@@ -102,20 +130,27 @@ export class AdminService {
   }
 
   async lockUser(id: string): Promise<UserDocument> {
-    return this.userModel.findByIdAndUpdate(id, { isBlocked: true }, { new: true }).exec();
+    return this.userModel
+      .findByIdAndUpdate(id, { isBlocked: true }, { new: true })
+      .exec();
   }
 
   async unlockUser(id: string): Promise<UserDocument> {
-    return this.userModel.findByIdAndUpdate(id, { isBlocked: false }, { new: true }).exec();
+    return this.userModel
+      .findByIdAndUpdate(id, { isBlocked: false }, { new: true })
+      .exec();
   }
 
   // Service management
   async getAllServices(): Promise<ServiceDocument[]> {
-    return this.serviceModel.find().exec();
+    return this.serviceModel.find().populate(['expertId']).exec();
   }
 
   async getServiceById(id: string): Promise<ServiceDocument> {
-    const service = await this.serviceModel.findById(id).exec();
+    const service = await this.serviceModel
+      .findById(id)
+      .populate(['expertId'])
+      .exec();
     if (!service) throw new NotFoundException('Service not found');
     return service;
   }
@@ -126,7 +161,9 @@ export class AdminService {
   }
 
   async updateService(id: string, serviceDto: any): Promise<ServiceDocument> {
-    const service = await this.serviceModel.findByIdAndUpdate(id, serviceDto, { new: true }).exec();
+    const service = await this.serviceModel
+      .findByIdAndUpdate(id, serviceDto, { new: true })
+      .exec();
     if (!service) throw new NotFoundException('Service not found');
     return service;
   }
@@ -137,6 +174,33 @@ export class AdminService {
 
   // Appointment history: list all appointments (with population for detail)
   async getAllAppointments(): Promise<AppointmentDocument[]> {
-    return this.appointmentModel.find().populate('user expert service').exec();
+    return this.appointmentModel
+      .find()
+      .populate(['userId', 'expertId', 'serviceId'])
+      .exec();
+  }
+
+  async getProfile(userId: string): Promise<UserDocument> {
+    const user = await this.userModel.findById(userId).exec();
+    if (!user) throw new NotFoundException('User not found');
+    return user;
+  }
+
+  async updateProfile(
+    userId: string,
+    dto: UpdateProfileDto,
+  ): Promise<UserDocument> {
+    const updatedUser = await this.userModel
+      .findByIdAndUpdate(userId, dto, { new: true })
+      .exec();
+    if (!updatedUser) throw new NotFoundException('User not found');
+    return updatedUser;
+  }
+
+  async getAppointmentDetail(id: string): Promise<Appointment> {
+    return this.appointmentModel
+      .findOne({ _id: id })
+      .populate(['expertId', 'userId', 'serviceId'])
+      .exec();
   }
 }

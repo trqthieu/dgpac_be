@@ -1,11 +1,24 @@
 // src/admin/admin.controller.ts
-import { Controller, Get, Query, Param, Post, Put, Delete, Body, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Query,
+  Param,
+  Post,
+  Put,
+  Delete,
+  Body,
+  UseGuards,
+  Req,
+} from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Roles } from 'src/auth/roles.decorator';
 import { RolesGuard } from 'src/auth/roles.guard';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateProfileDto } from 'src/users/dto/update-profile.dto';
+import { BlogService } from 'src/blog/blog.service';
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles('admin')
@@ -87,5 +100,22 @@ export class AdminController {
   @Get('appointments')
   async getAllAppointments() {
     return this.adminService.getAllAppointments();
+  }
+
+  @Get('profile')
+  async getProfile(@Req() req) {
+    console.log(req.user);
+    return this.adminService.getProfile(req.user._id);
+  }
+
+  // Update user profile
+  @Put('profile')
+  async updateProfile(@Req() req, @Body() updateProfileDto: UpdateProfileDto) {
+    return this.adminService.updateProfile(req.user._id, updateProfileDto);
+  }
+
+  @Get('appointments/:id')
+  async getAppointmentDetail(@Req() req, @Param('id') id: string) {
+    return this.adminService.getAppointmentDetail(id);
   }
 }

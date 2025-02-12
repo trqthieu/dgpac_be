@@ -1,5 +1,10 @@
 // src/experts/expert.service.ts
-import { Injectable, NotFoundException, ForbiddenException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from '../schemas/user.schema';
@@ -8,6 +13,7 @@ import { Appointment, AppointmentStatus } from '../schemas/appointment.schema';
 import { Notification } from '../schemas/notification.schema';
 import { CreateServiceDto } from './dto/create-service.dto';
 import { UpdateServiceDto } from './dto/update-service.dto';
+import { UpdateProfileDto } from 'src/users/dto/update-profile.dto';
 
 @Injectable()
 export class ExpertService {
@@ -15,7 +21,8 @@ export class ExpertService {
     @InjectModel(User.name) private userModel: Model<User>,
     @InjectModel(Service.name) private serviceModel: Model<Service>,
     @InjectModel(Appointment.name) private appointmentModel: Model<Appointment>,
-    @InjectModel(Notification.name) private notificationModel: Model<Notification>,
+    @InjectModel(Notification.name)
+    private notificationModel: Model<Notification>,
   ) {}
 
   // Return expert's personal profile
@@ -28,7 +35,7 @@ export class ExpertService {
   }
 
   // Update expert profile
-  async updateProfile(user: any, updateData: any): Promise<any> {
+  async updateProfile(user: any, updateData: UpdateProfileDto): Promise<any> {
     const updated = await this.userModel
       .findByIdAndUpdate(user._id, updateData, { new: true })
       .lean()
@@ -63,11 +70,17 @@ export class ExpertService {
   }
 
   // Update an expert's service
-  async updateService(user: any, serviceId: string, dto: UpdateServiceDto): Promise<Service> {
+  async updateService(
+    user: any,
+    serviceId: string,
+    dto: UpdateServiceDto,
+  ): Promise<Service> {
     if (user.role !== 'expert') {
       throw new ForbiddenException('Only experts can update services');
     }
-    const service = await this.serviceModel.findOne({ _id: serviceId, expertId: user._id }).exec();
+    const service = await this.serviceModel
+      .findOne({ _id: serviceId, expertId: user._id })
+      .exec();
     if (!service) {
       throw new NotFoundException('Service not found');
     }
@@ -80,7 +93,9 @@ export class ExpertService {
     if (user.role !== 'expert') {
       throw new ForbiddenException('Only experts can delete services');
     }
-    const result = await this.serviceModel.deleteOne({ _id: serviceId, expertId: user._id }).exec();
+    const result = await this.serviceModel
+      .deleteOne({ _id: serviceId, expertId: user._id })
+      .exec();
     if (result.deletedCount === 0) {
       throw new NotFoundException('Service not found');
     }
@@ -92,19 +107,41 @@ export class ExpertService {
     if (user.role !== 'expert') {
       throw new ForbiddenException('Only experts can view appointments');
     }
-    return this.appointmentModel.find({ expertId: user._id }).exec();
+    return this.appointmentModel
+      .find({ expertId: user._id })
+      .populate(['expertId', 'userId', 'serviceId'])
+      .exec();
+  }
+
+  async getAppointmentDetail(id: string): Promise<Appointment> {
+    return this.appointmentModel
+      .findOne({ _id: id })
+      .populate(['expertId', 'userId', 'serviceId'])
+      .exec();
   }
 
   // Update appointment status (accept/decline)
-  async updateAppointmentStatus(user: any, appointmentId: string, status: string): Promise<Appointment> {
+  async updateAppointmentStatus(
+    user: any,
+    appointmentId: string,
+    status: string,
+  ): Promise<Appointment> {
     if (user.role !== 'expert') {
-      throw new ForbiddenException('Only experts can update appointment status');
+      throw new ForbiddenException(
+        'Only experts can update appointment status',
+      );
     }
     // Allow only confirmed or declined statuses
-    if (![AppointmentStatus.Confirmed, AppointmentStatus.Declined].includes(status as AppointmentStatus)) {
+    if (
+      ![AppointmentStatus.Confirmed, AppointmentStatus.Declined].includes(
+        status as AppointmentStatus,
+      )
+    ) {
       throw new BadRequestException('Invalid status');
     }
-    const appointment = await this.appointmentModel.findOne({ _id: appointmentId, expertId: user._id }).exec();
+    const appointment = await this.appointmentModel
+      .findOne({ _id: appointmentId, expertId: user._id })
+      .exec();
     if (!appointment) {
       throw new NotFoundException('Appointment not found');
     }
