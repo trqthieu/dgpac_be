@@ -12,6 +12,7 @@ import { MailerService } from '../mailer/mailer.service';
 import { SignUpDto } from './dto/sign-up.dto';
 import { LoginDto } from './dto/login.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { UpdateProfileDto } from 'src/users/dto/update-profile.dto';
 
 @Injectable()
 export class AuthService {
@@ -39,7 +40,7 @@ export class AuthService {
     const passwordHash = await bcrypt.hash(signUpDto.password, 10);
     const user = await this.usersService.create({ ...signUpDto, passwordHash });
     const token = this.jwtService.sign({ sub: user._id, email: user.email });
-    return { user, access_token: token };
+    return { user, accessToken: token };
   }
 
   // Local login: Validate credentials and return JWT
@@ -52,7 +53,7 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
     const token = this.jwtService.sign({ sub: user._id, email: user.email });
-    return { user, access_token: token };
+    return { user, accessToken: token };
   }
 
   // Google OAuth: Find or create user based on Google profile and return JWT
@@ -64,7 +65,7 @@ export class AuthService {
       user = await this.usersService.createFromGoogle(googleUser);
     }
     const token = this.jwtService.sign({ sub: user._id, email: user.email });
-    return { user, access_token: token };
+    return { user, accessToken: token };
   }
 
   // Forgot Password: Generate reset token and send email
@@ -101,5 +102,15 @@ export class AuthService {
     user.passwordHash = await bcrypt.hash(newPassword, 10);
     await this.usersService.update(user._id, user);
     return { message: 'Password reset successful' };
+  }
+
+  async getProfile(user: any): Promise<any> {
+    const res = await this.usersService.findById(user._id);
+    return res;
+  }
+
+  async updateProfile(user: any, updateData: UpdateProfileDto): Promise<any> {
+    const updated = await this.usersService.updateProfile(user._id, updateData);
+    return updated;
   }
 }
