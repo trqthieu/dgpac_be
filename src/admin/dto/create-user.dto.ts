@@ -13,6 +13,14 @@ export class CreateUserDto {
 
   @ApiProperty()
   @IsString()
-  @MinLength(8)
+  readonly avatar: string;
+
+  @ApiProperty()
+  @IsString()
+  readonly role: string;
+
+  @ApiProperty()
+  @IsString()
+  @MinLength(6)
   readonly password: string;
 }

@@ -33,7 +33,15 @@ export class AdminController {
     return this.adminService.getDashboardStats(period || 'week');
   }
 
-  @Post('create-expert')
+  @Get('report')
+  async getRevenueReport(
+    @Query('fromDate') fromDate: string,
+    @Query('toDate') toDate: string,
+  ) {
+    return this.adminService.getRevenueReport(fromDate, toDate);
+  }
+
+  @Post('users')
   async createUser(@Body() createUserDto: CreateUserDto) {
     return this.adminService.createUser(createUserDto);
   }

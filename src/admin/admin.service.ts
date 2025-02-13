@@ -83,6 +83,56 @@ export class AdminService {
     return stats[0] || { totalAppointments: 0, totalRevenue: 0 };
   }
 
+  async getRevenueReport(fromDate: string, toDate: string): Promise<any> {
+    console.log('🚀 ~ AdminService ~ getRevenueReport ~ fromDate:', fromDate);
+    // Validate dates
+    const from = new Date(fromDate);
+    const to = new Date(toDate);
+    if (isNaN(from.getTime()) || isNaN(to.getTime())) {
+      throw new BadRequestException('Invalid date format');
+    }
+    // Ensure that fromDate is before toDate
+    if (from > to) {
+      throw new BadRequestException('fromDate must be before toDate');
+    }
+    // Aggregate revenue data:
+    const report = await this.appointmentModel.aggregate([
+      {
+        $match: {
+          appointmentTime: {
+            ...(from ? { $gte: from } : {}),
+            ...(to ? { $lte: to } : {}),
+          },
+          // Optionally filter by appointment status
+          status: {
+            $in: [AppointmentStatus.Confirmed, AppointmentStatus.Completed],
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: 'services', // the collection name for Service
+          localField: 'serviceId',
+          foreignField: '_id',
+          as: 'serviceInfo',
+        },
+      },
+      { $unwind: '$serviceInfo' },
+      {
+        $group: {
+          _id: {
+            $dateToString: { format: '%Y-%m-%d', date: '$appointmentTime' },
+          },
+          totalRevenue: { $sum: '$serviceInfo.price' },
+          appointmentCount: { $sum: 1 },
+        },
+      },
+      { $sort: { _id: 1 } },
+    ]);
+
+    return report;
+  }
+
   // User management
   async getAllUsers(): Promise<UserDocument[]> {
     return this.userModel.find().exec();
@@ -105,7 +155,8 @@ export class AdminService {
       fullName: dto.fullName,
       email: dto.email,
       passwordHash,
-      role: 'expert', // default role for created users
+      role: dto.role, // default role for created users
+      avatar: dto.avatar, // default role for created users
       isBlocked: false,
     });
     return newUser.save();
@@ -118,8 +169,13 @@ export class AdminService {
   }
 
   async updateUser(id: string, updateDto: any): Promise<UserDocument> {
+    let passwordHash;
+    if (updateDto.password) {
+      const saltRounds = 10;
+      passwordHash = await bcrypt.hash(updateDto.password, saltRounds);
+    }
     const user = await this.userModel
-      .findByIdAndUpdate(id, updateDto, { new: true })
+      .findByIdAndUpdate(id, { ...updateDto, passwordHash }, { new: true })
       .exec();
     if (!user) throw new NotFoundException('User not found');
     return user;
