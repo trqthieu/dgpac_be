@@ -59,6 +59,8 @@ export class AuthController {
   @UseGuards(GoogleOAuthGuard)
   async googleAuthRedirect(@Req() req: Request, @Res() res: Response) {
     const jwt = await this.authService.oAuthLogin(req.user);
+    console.log('accessToken', jwt.accessToken);
+
     res.redirect(`http://your-frontend-url?token=${jwt.accessToken}`);
   }
 

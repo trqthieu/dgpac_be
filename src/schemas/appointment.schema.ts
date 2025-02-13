@@ -7,8 +7,7 @@ export enum AppointmentStatus {
   Pending = 'pending',
   Confirmed = 'confirmed',
   Declined = 'declined',
-  Completed = 'completed',
-  Cancelled = 'cancelled',
+  Completed = 'completed'
 }
 
 @Schema({ timestamps: true })

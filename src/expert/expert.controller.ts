@@ -46,6 +46,11 @@ export class ExpertController {
     return this.expertService.listServices(req.user);
   }
 
+  @Get('services/:id')
+  async getService(@Param('id') id: string) {
+    return this.expertService.getServiceById(id);
+  }
+
   @Put('services/:id')
   async updateService(
     @Req() req,

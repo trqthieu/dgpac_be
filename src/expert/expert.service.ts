@@ -8,7 +8,7 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from '../schemas/user.schema';
-import { Service } from '../schemas/service.schema';
+import { Service, ServiceDocument } from '../schemas/service.schema';
 import { Appointment, AppointmentStatus } from '../schemas/appointment.schema';
 import { Notification } from '../schemas/notification.schema';
 import { CreateServiceDto } from './dto/create-service.dto';
@@ -66,7 +66,19 @@ export class ExpertService {
     if (user.role !== 'expert') {
       throw new ForbiddenException('Only experts can view services');
     }
-    return this.serviceModel.find({ expertId: user._id }).exec();
+    return this.serviceModel
+      .find({ expertId: user._id })
+      .populate(['expertId'])
+      .exec();
+  }
+
+  async getServiceById(id: string): Promise<ServiceDocument> {
+    const service = await this.serviceModel
+      .findById(id)
+      .populate(['expertId'])
+      .exec();
+    if (!service) throw new NotFoundException('Service not found');
+    return service;
   }
 
   // Update an expert's service
