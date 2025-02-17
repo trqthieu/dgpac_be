@@ -57,6 +57,7 @@ export class ExpertService {
       description: dto.description,
       price: dto.price,
       duration: dto.duration,
+      imageUrl: dto.imageUrl,
     });
     return newService.save();
   }

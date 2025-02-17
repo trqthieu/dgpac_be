@@ -19,4 +19,8 @@ export class CreateServiceDto {
   @ApiProperty()
   @IsNumber()
   duration: number;
+
+  @ApiProperty()
+  @IsString()
+  imageUrl: string;
 }

@@ -158,6 +158,7 @@ export class AdminService {
       role: dto.role, // default role for created users
       avatar: dto.avatar, // default role for created users
       isBlocked: false,
+      address: dto.address
     });
     return newUser.save();
   }

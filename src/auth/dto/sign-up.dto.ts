@@ -1,6 +1,6 @@
 // dto/sign-up.dto.ts
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsString, MinLength } from 'class-validator';
+import { IsEmail, IsOptional, IsString, MinLength } from 'class-validator';
 
 export class SignUpDto {
   @ApiProperty()
@@ -15,5 +15,10 @@ export class SignUpDto {
   @IsString()
   @MinLength(8)
   readonly password: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  readonly address?: string;
 }
 
