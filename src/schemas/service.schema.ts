@@ -20,6 +20,9 @@ export class Service {
 
   @Prop({ required: true })
   duration: number; // in minutes
+
+  @Prop()
+  imageUrl: string;
 }
 
 export const ServiceSchema = SchemaFactory.createForClass(Service);

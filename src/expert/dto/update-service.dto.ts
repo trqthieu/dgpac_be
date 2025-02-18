@@ -22,4 +22,9 @@ export class UpdateServiceDto {
   @IsOptional()
   @IsNumber()
   duration?: number;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  imageUrl?: string;
 }

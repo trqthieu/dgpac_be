@@ -29,6 +29,9 @@ export class User {
   @Prop()
   avatar: string;
 
+  @Prop()
+  address: string;
+
   @Prop({ default: false })
   isBlocked: boolean;
 }
