@@ -23,7 +23,7 @@ export class MailerService {
   }
 
   async sendResetPasswordEmail(user: any, resetToken: string) {
-    const resetLink = `http://your-frontend-url/reset-password?token=${resetToken}`;
+    const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: user.email,

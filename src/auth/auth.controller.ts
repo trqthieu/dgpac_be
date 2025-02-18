@@ -18,6 +18,9 @@ import { ForgotPasswordDto, LoginDto } from './dto/login.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { UpdateProfileDto } from 'src/users/dto/update-profile.dto';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 @Controller('auth')
 export class AuthController {
@@ -61,7 +64,7 @@ export class AuthController {
     const jwt = await this.authService.oAuthLogin(req.user);
     console.log('accessToken', jwt.accessToken);
 
-    res.redirect(`http://your-frontend-url?token=${jwt.accessToken}`);
+    res.redirect(`${process.env.FRONTEND_URL}?token=${jwt.accessToken}`);
   }
 
   @UseGuards(JwtAuthGuard)
