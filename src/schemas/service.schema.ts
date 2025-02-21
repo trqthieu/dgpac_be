@@ -6,8 +6,8 @@ export type ServiceDocument = Service & Document;
 
 @Schema({ timestamps: true })
 export class Service {
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: true })
-  expertId: string;
+  @Prop({ type: [MongooseSchema.Types.ObjectId], ref: 'User', required: true })
+  expertId: string[];
 
   @Prop({ required: true })
   name: string;
@@ -19,10 +19,13 @@ export class Service {
   price: number;
 
   @Prop({ required: true })
-  duration: number; // in minutes
+  duration: number;
 
   @Prop()
   imageUrl: string;
+
+  @Prop({ type: Boolean, default: true })
+  active: boolean;
 }
 
 export const ServiceSchema = SchemaFactory.createForClass(Service);

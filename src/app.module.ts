@@ -6,10 +6,13 @@ import { AuthModule } from './auth/auth.module';
 import { ExpertModule } from './expert/expert.module';
 import { AdminModule } from './admin/admin.module';
 import { BlogModule } from './blog/blog.module';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 @Module({
   imports: [
-    MongooseModule.forRoot('mongodb+srv://admin12345:admin12345@cluster0.lfb12.mongodb.net/massage_booking'),
+    MongooseModule.forRoot(`${process.env.MONGO_URI}`),
     UsersModule,
     AppointmentsModule,
     AuthModule,

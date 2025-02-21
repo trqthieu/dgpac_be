@@ -68,7 +68,17 @@ export class ExpertService {
       throw new ForbiddenException('Only experts can view services');
     }
     return this.serviceModel
-      .find({ expertId: user._id })
+      .find({ active: true })
+      .populate(['expertId'])
+      .exec();
+  }
+
+  async listMyServices(user: any): Promise<Service[]> {
+    if (user.role !== 'expert') {
+      throw new ForbiddenException('Only experts can view services');
+    }
+    return this.serviceModel
+      .find({ expertId: user._id, active: true })
       .populate(['expertId'])
       .exec();
   }
@@ -113,6 +123,29 @@ export class ExpertService {
       throw new NotFoundException('Service not found');
     }
     return { message: 'Service deleted successfully' };
+  }
+
+  async registerService(user: any, serviceId: string): Promise<Service> {
+    return this.serviceModel
+      .findByIdAndUpdate(
+        serviceId,
+        { $addToSet: { expertId: user._id } },
+        { new: true },
+      )
+      .exec();
+  }
+
+  async removeExpertFromService(
+    user: any,
+    serviceId: string,
+  ): Promise<Service> {
+    return this.serviceModel
+      .findByIdAndUpdate(
+        serviceId,
+        { $pull: { expertId: user._id } }, // Remove the expertId from the array
+        { new: true }, // Return the updated document
+      )
+      .exec();
   }
 
   // List all appointments for the expert

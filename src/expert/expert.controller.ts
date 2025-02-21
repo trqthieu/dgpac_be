@@ -46,6 +46,11 @@ export class ExpertController {
     return this.expertService.listServices(req.user);
   }
 
+  @Get('my-services')
+  async listMyServices(@Req() req) {
+    return this.expertService.listMyServices(req.user);
+  }
+
   @Get('services/:id')
   async getService(@Param('id') id: string) {
     return this.expertService.getServiceById(id);
@@ -63,6 +68,16 @@ export class ExpertController {
   @Delete('services/:id')
   async deleteService(@Req() req, @Param('id') id: string) {
     return this.expertService.deleteService(req.user, id);
+  }
+
+  @Put('register-services/:id')
+  async registerService(@Req() req, @Param('id') id: string) {
+    return this.expertService.registerService(req.user, id);
+  }
+
+  @Put('unregister-services/:id')
+  async removeExpertFromService(@Req() req, @Param('id') id: string) {
+    return this.expertService.removeExpertFromService(req.user, id);
   }
 
   // Appointment endpoints

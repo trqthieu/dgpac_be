@@ -204,7 +204,7 @@ export class UsersService {
 
   async listServices(): Promise<Service[]> {
     return this.serviceModel
-      .find()
+      .find({ active: true })
       .populate({
         path: 'expertId',
       })

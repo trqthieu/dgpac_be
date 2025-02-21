@@ -158,7 +158,7 @@ export class AdminService {
       role: dto.role, // default role for created users
       avatar: dto.avatar, // default role for created users
       isBlocked: false,
-      address: dto.address
+      address: dto.address,
     });
     return newUser.save();
   }
@@ -200,7 +200,10 @@ export class AdminService {
 
   // Service management
   async getAllServices(): Promise<ServiceDocument[]> {
-    return this.serviceModel.find().populate(['expertId']).exec();
+    return this.serviceModel
+      .find({ active: true })
+      .populate(['expertId'])
+      .exec();
   }
 
   async getServiceById(id: string): Promise<ServiceDocument> {
@@ -226,7 +229,7 @@ export class AdminService {
   }
 
   async deleteService(id: string): Promise<any> {
-    return this.serviceModel.findByIdAndDelete(id).exec();
+    return this.serviceModel.findByIdAndUpdate(id, { active: false }).exec();
   }
 
   // Appointment history: list all appointments (with population for detail)
