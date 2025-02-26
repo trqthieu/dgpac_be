@@ -37,10 +37,10 @@ export class AppointmentsService {
   }
 
   async listAppointmentsForUser(userId: string): Promise<Appointment[]> {
-    return this.appointmentModel.find({ userId }).exec();
+    return this.appointmentModel.find({ userId }).sort({ createdAt: 'desc' }).exec();
   }
 
   async listAppointmentsForExpert(expertId: string): Promise<Appointment[]> {
-    return this.appointmentModel.find({ expertId }).exec();
+    return this.appointmentModel.find({ expertId }).sort({ createdAt: 'desc' }).exec();
   }
 }

@@ -70,6 +70,7 @@ export class ExpertService {
     return this.serviceModel
       .find({ active: true })
       .populate(['expertId'])
+      .sort({ createdAt: 'desc' })
       .exec();
   }
 
@@ -80,6 +81,7 @@ export class ExpertService {
     return this.serviceModel
       .find({ expertId: user._id, active: true })
       .populate(['expertId'])
+      .sort({ createdAt: 'desc' })
       .exec();
   }
 
@@ -156,6 +158,7 @@ export class ExpertService {
     return this.appointmentModel
       .find({ expertId: user._id })
       .populate(['expertId', 'userId', 'serviceId'])
+      .sort({ createdAt: 'desc' })
       .exec();
   }
 
@@ -200,6 +203,6 @@ export class ExpertService {
     if (user.role !== 'expert') {
       throw new ForbiddenException('Only experts can view notifications');
     }
-    return this.notificationModel.find({ expertId: user._id }).exec();
+    return this.notificationModel.find({ expertId: user._id }).sort({ createdAt: 'desc' }).exec();
   }
 }

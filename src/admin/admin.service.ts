@@ -135,7 +135,7 @@ export class AdminService {
 
   // User management
   async getAllUsers(): Promise<UserDocument[]> {
-    return this.userModel.find().exec();
+    return this.userModel.find().sort({ createdAt: 'desc' }).exec();
   }
 
   async createUser(dto: CreateUserDto): Promise<UserDocument> {
@@ -203,6 +203,7 @@ export class AdminService {
     return this.serviceModel
       .find({ active: true })
       .populate(['expertId'])
+      .sort({ createdAt: 'desc' })
       .exec();
   }
 
@@ -236,7 +237,7 @@ export class AdminService {
   async getAllAppointments(): Promise<AppointmentDocument[]> {
     return this.appointmentModel
       .find()
-      .populate(['userId', 'expertId', 'serviceId'])
+      .populate(['userId', 'expertId', 'serviceId']).sort({ createdAt: 'desc' })
       .exec();
   }
 

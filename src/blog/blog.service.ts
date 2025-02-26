@@ -20,7 +20,7 @@ export class BlogService {
   }
 
   async findAll(): Promise<Blog[]> {
-    return this.blogModel.find().exec();
+    return this.blogModel.find().sort({ createdAt: 'desc' }).exec();
   }
 
   async findOne(id: string): Promise<Blog> {

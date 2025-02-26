@@ -82,7 +82,7 @@ export class UsersService {
 
   // Get all users (for admin)
   async findAll(): Promise<User[]> {
-    return this.userModel.find().exec();
+    return this.userModel.find().sort({ createdAt: 'desc' }).exec();
   }
 
   // Soft delete (block user)
@@ -156,6 +156,7 @@ export class UsersService {
     return this.appointmentModel
       .find({ userId: userId })
       .populate(['serviceId', 'expertId'])
+      .sort({ createdAt: 'desc' })
       .exec();
   }
   async getAppointmentDetail(id: string): Promise<Appointment> {
@@ -197,7 +198,7 @@ export class UsersService {
   async getReviewsByExpert(expertId: string): Promise<ReviewDocument[]> {
     const reviews = await this.reviewModel
       .find({ expertId: expertId })
-      .populate('userId', 'fullName email') // Optionally populate user info
+      .populate('userId', 'fullName email').sort({ createdAt: 'desc' }) // Optionally populate user info
       .exec();
     return reviews;
   }
@@ -207,7 +208,7 @@ export class UsersService {
       .find({ active: true })
       .populate({
         path: 'expertId',
-      })
+      }).sort({ createdAt: 'desc' })
       .exec();
   }
   async getServiceDetail(id: string): Promise<Service> {
@@ -220,7 +221,7 @@ export class UsersService {
   }
 
   async listExperts(): Promise<User[]> {
-    return this.userModel.find({ role: 'expert' }).exec();
+    return this.userModel.find({ role: 'expert' }).sort({ createdAt: 'desc' }).exec();
   }
 
   async getExpertDetail(id: string): Promise<User> {
