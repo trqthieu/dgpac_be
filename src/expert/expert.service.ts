@@ -182,7 +182,7 @@ export class ExpertService {
     }
     // Allow only confirmed or declined statuses
     if (
-      ![AppointmentStatus.Confirmed, AppointmentStatus.Declined].includes(
+      ![AppointmentStatus.Confirmed, AppointmentStatus.Declined, AppointmentStatus.Completed, AppointmentStatus.Canceled].includes(
         status as AppointmentStatus,
       )
     ) {

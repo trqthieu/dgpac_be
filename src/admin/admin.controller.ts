@@ -126,4 +126,9 @@ export class AdminController {
   async getAppointmentDetail(@Req() req, @Param('id') id: string) {
     return this.adminService.getAppointmentDetail(id);
   }
+
+  @Delete('appointments/:id')
+  async deleteAppointment(@Req() req, @Param('id') id: string) {
+    return this.adminService.deleteAppointment(id);
+  }
 }

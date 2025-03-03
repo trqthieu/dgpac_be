@@ -105,6 +105,24 @@ export class ExpertController {
     return this.expertService.updateAppointmentStatus(req.user, id, 'declined');
   }
 
+  @Patch('appointments/:id/complete')
+  async completeAppointment(@Req() req, @Param('id') id: string) {
+    return this.expertService.updateAppointmentStatus(
+      req.user,
+      id,
+      'completed',
+    );
+  }
+
+  @Patch('appointments/:id/cancel')
+  async cancelAppointment(@Req() req, @Param('id') id: string) {
+    return this.expertService.updateAppointmentStatus(
+      req.user,
+      id,
+      'canceled',
+    );
+  }
+
   // Notification endpoint
   @Get('notifications')
   async listNotifications(@Req() req) {

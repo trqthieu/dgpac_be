@@ -237,7 +237,8 @@ export class AdminService {
   async getAllAppointments(): Promise<AppointmentDocument[]> {
     return this.appointmentModel
       .find()
-      .populate(['userId', 'expertId', 'serviceId']).sort({ createdAt: 'desc' })
+      .populate(['userId', 'expertId', 'serviceId'])
+      .sort({ createdAt: 'desc' })
       .exec();
   }
 
@@ -263,5 +264,9 @@ export class AdminService {
       .findOne({ _id: id })
       .populate(['expertId', 'userId', 'serviceId'])
       .exec();
+  }
+
+  async deleteAppointment(id: string): Promise<Appointment> {
+    return this.appointmentModel.findByIdAndDelete(id).exec();
   }
 }
