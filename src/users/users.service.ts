@@ -7,29 +7,15 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from '../schemas/user.schema';
 import * as bcrypt from 'bcrypt';
-import {
-  Appointment,
-  AppointmentDocument,
-  AppointmentStatus,
-} from 'src/schemas/appointment.schema';
-import { Chat, ChatDocument } from 'src/schemas/chat.schema';
-import { Review, ReviewDocument } from 'src/schemas/review.schema';
+
 import { BookAppointmentDto } from './dto/book-appointment.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { ChatMessageDto } from './dto/chat-message.dto';
 import { ReviewDto } from './dto/review.dto';
-import { Service } from 'src/schemas/service.schema';
 
 @Injectable()
 export class UsersService {
-  constructor(
-    @InjectModel(User.name) private userModel: Model<UserDocument>,
-    @InjectModel(Appointment.name)
-    private appointmentModel: Model<AppointmentDocument>,
-    @InjectModel(Chat.name) private chatModel: Model<ChatDocument>,
-    @InjectModel(Review.name) private reviewModel: Model<ReviewDocument>,
-    @InjectModel(Service.name) private serviceModel: Model<Service>,
-  ) {}
+  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
   async validateUser(email: string, password: string): Promise<any> {
     const user = await this.findByEmail(email);
@@ -85,16 +71,6 @@ export class UsersService {
     return this.userModel.find().sort({ createdAt: 'desc' }).exec();
   }
 
-  // Soft delete (block user)
-  async blockUser(userId: string): Promise<User> {
-    return this.update(userId, { isBlocked: true });
-  }
-
-  // Unblock user
-  async unblockUser(userId: string): Promise<User> {
-    return this.update(userId, { isBlocked: false });
-  }
-
   async createFromGoogle(googleUser: any): Promise<UserDocument> {
     // Map fields from the Google user to your user schema.
     const createdUser = new this.userModel({
@@ -124,107 +100,5 @@ export class UsersService {
       .exec();
     if (!updatedUser) throw new NotFoundException('User not found');
     return updatedUser;
-  }
-
-  async bookAppointment(
-    userId: string,
-    dto: BookAppointmentDto,
-  ): Promise<AppointmentDocument> {
-    const appointmentData: Appointment = {
-      userId: userId,
-      serviceId: dto.serviceId,
-      appointmentTime: new Date(dto.appointmentTime),
-      status: AppointmentStatus.Pending,
-    };
-    // If the user selects a specific expert, set it; otherwise, leave undefined
-    if (dto.expertId) {
-      appointmentData.expertId = dto.expertId;
-    }
-    const appointment = new this.appointmentModel(appointmentData);
-    const savedAppointment = await appointment.save();
-
-    // If no expert was chosen, you could implement logic to notify all experts offering the service.
-    // For example:
-    // if (!dto.expertId) {
-    //   await this.notifyExpertsAboutNewAppointment(dto.serviceId, savedAppointment._id);
-    // }
-
-    return savedAppointment;
-  }
-
-  async getAppointments(userId: string): Promise<AppointmentDocument[]> {
-    return this.appointmentModel
-      .find({ userId: userId })
-      .populate(['serviceId', 'expertId'])
-      .sort({ createdAt: 'desc' })
-      .exec();
-  }
-  async getAppointmentDetail(id: string): Promise<Appointment> {
-    return this.appointmentModel
-      .findOne({ _id: id })
-      .populate(['serviceId', 'expertId'])
-      .exec();
-  }
-
-  async sendChatMessage(
-    userId: string,
-    dto: ChatMessageDto,
-  ): Promise<ChatDocument> {
-    const chat = new this.chatModel({
-      userId: userId,
-      message: dto.message,
-      sender: 'user',
-    });
-    return chat.save();
-  }
-
-  async getChatHistory(userId: string): Promise<ChatDocument[]> {
-    return this.chatModel
-      .find({ userId: userId })
-      .sort({ createdAt: -1 })
-      .exec();
-  }
-
-  async postReview(userId: string, dto: ReviewDto): Promise<ReviewDocument> {
-    const review = new this.reviewModel({
-      userId: userId,
-      expertId: dto.expertId,
-      rating: dto.rating,
-      comment: dto.comment,
-    });
-    return review.save();
-  }
-
-  async getReviewsByExpert(expertId: string): Promise<ReviewDocument[]> {
-    const reviews = await this.reviewModel
-      .find({ expertId: expertId })
-      .populate('userId', 'fullName email').sort({ createdAt: 'desc' }) // Optionally populate user info
-      .exec();
-    return reviews;
-  }
-
-  async listServices(): Promise<Service[]> {
-    return this.serviceModel
-      .find({ active: true })
-      .populate({
-        path: 'expertId',
-      }).sort({ createdAt: 'desc' })
-      .exec();
-  }
-  async getServiceDetail(id: string): Promise<Service> {
-    return this.serviceModel
-      .findById(id)
-      .populate({
-        path: 'expertId',
-      })
-      .exec();
-  }
-
-  async listExperts(): Promise<User[]> {
-    return this.userModel.find({ role: 'expert' }).sort({ createdAt: 'desc' }).exec();
-  }
-
-  async getExpertDetail(id: string): Promise<User> {
-    return this.userModel.findOne({ _id: id, role: 'expert' }).exec();
   }
 }

@@ -6,17 +6,14 @@ export type BlogDocument = Blog & Document;
 
 @Schema({ timestamps: true })
 export class Blog {
-  @Prop({ required: true })
+  @Prop()
   title: string;
 
-  @Prop({ required: true })
-  content: string;
+  @Prop()
+  tag: string;
 
-  @Prop({ required: true })
-  author: string;
-
-  @Prop({ default: false })
-  published: boolean;
+  @Prop()
+  description: string;
 }
 
 export const BlogSchema = SchemaFactory.createForClass(Blog);

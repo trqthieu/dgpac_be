@@ -17,23 +17,8 @@ export class User {
   @Prop()
   passwordHash: string;
 
-  @Prop()
-  providerId: string;
-
-  @Prop()
-  provider: string;
-
-  @Prop({ required: true, enum: ['user', 'expert', 'admin'], default: 'user' })
+  @Prop({ required: true, enum: ['user', 'admin'], default: 'user' })
   role: string;
-
-  @Prop()
-  avatar: string;
-
-  @Prop()
-  address: string;
-
-  @Prop({ default: false })
-  isBlocked: boolean;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
