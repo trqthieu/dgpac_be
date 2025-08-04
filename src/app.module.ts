@@ -1,10 +1,12 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UsersModule } from './users/users.module';
-import { AppointmentsModule } from './appointments/appointments.module';
+import { ProductModule } from './products/products.module';
 import { AuthModule } from './auth/auth.module';
 import { BlogModule } from './blog/blog.module';
 import * as dotenv from 'dotenv';
+import { ProjectModule } from './projects/project.module';
+import { UserRequestModule } from './user-requests/user-request.module';
 
 dotenv.config();
 
@@ -12,9 +14,11 @@ dotenv.config();
   imports: [
     MongooseModule.forRoot(`${process.env.MONGO_URI}`),
     UsersModule,
-    AppointmentsModule,
+    ProductModule,
     AuthModule,
-    BlogModule
+    BlogModule,
+    ProjectModule,
+    UserRequestModule
   ],
 })
 export class AppModule {}

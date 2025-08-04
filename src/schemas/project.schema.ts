@@ -3,22 +3,43 @@ import { Document } from 'mongoose';
 
 export type ProjectDocument = Project & Document;
 
+export enum IndustryEnum {
+  ALL = 'all',
+  CHEMICALS = 'chemicals',
+  PHARMACEUTICALS = 'pharmaceuticals & healthcare',
+  OIL_GAS = 'oil & gas',
+  ELECTRONICS = 'electronics & semiconductors',
+  DEFENSE = 'defense & military',
+  ENERGY = 'energy & renewables',
+  CONSUMER_GOODS = 'consumer goods',
+  OTHERS = 'others',
+}
+
+export enum WorkEnum {
+  ALL = 'all',
+  PACKAGING = 'packaging',
+  DECANTING = 'decanting',
+  TRANSPORT = 'transport',
+  WAREHOUSING = 'warehousing',
+  TRAINING = 'training',
+}
+
 @Schema({ timestamps: true })
 export class Project {
-  @Prop()
+  @Prop({ required: true })
   title: string;
 
-  @Prop()
+  @Prop({ required: true })
   image: string;
 
-  @Prop()
+  @Prop({ required: true })
   description: string;
 
-  @Prop()
-  industry: string;
+  @Prop({ enum: IndustryEnum, required: true })
+  industry: IndustryEnum;
 
-  @Prop()
-  work: string;
+  @Prop({ enum: WorkEnum, required: true })
+  work: WorkEnum;
 }
 
 export const ProjectSchema = SchemaFactory.createForClass(Project);

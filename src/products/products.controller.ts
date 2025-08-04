@@ -1,4 +1,5 @@
-// src/blog/blog.controller.ts
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ProductService } from './products.service';
 import {
   Body,
   Controller,
@@ -10,47 +11,49 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Roles } from '../auth/roles.decorator';
 import { RolesGuard } from '../auth/roles.guard';
-import { BlogService } from './blog.service';
-import { CreateBlogDto, UpdateBlogDto } from './dto/blog.dto';
 import { PaginationQueryDto } from 'src/config/dto/pagination';
+import { CreateProductDto, UpdateProductDto } from './dto/product.dto';
 
-@Controller('blogs')
+@ApiTags('Products')
+@Controller('products')
 @ApiBearerAuth()
-export class BlogController {
-  constructor(private readonly blogService: BlogService) {}
+export class ProductController {
+  constructor(private readonly productService: ProductService) {}
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
   @Post()
-  async create(@Body() createBlogDto: CreateBlogDto) {
-    return this.blogService.create(createBlogDto);
+  async create(@Body() createProductDto: CreateProductDto) {
+    return this.productService.create(createProductDto);
   }
 
   @Get()
   async findAll(@Query() query: PaginationQueryDto) {
-    return this.blogService.findAll(query);
+    return this.productService.findAll(query);
   }
 
   @Get(':id')
   async findOne(@Param('id') id: string) {
-    return this.blogService.findOne(id);
+    return this.productService.findOne(id);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
   @Put(':id')
-  async update(@Param('id') id: string, @Body() updateBlogDto: UpdateBlogDto) {
-    return this.blogService.update(id, updateBlogDto);
+  async update(
+    @Param('id') id: string,
+    @Body() updateProductDto: UpdateProductDto,
+  ) {
+    return this.productService.update(id, updateProductDto);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
   @Delete(':id')
   async remove(@Param('id') id: string) {
-    return this.blogService.remove(id);
+    return this.productService.remove(id);
   }
 }
