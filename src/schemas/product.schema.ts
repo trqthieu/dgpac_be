@@ -17,7 +17,7 @@ export class Product {
   range: string[];
 
   @Prop()
-  position: string;
+  position: number;
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Product);
