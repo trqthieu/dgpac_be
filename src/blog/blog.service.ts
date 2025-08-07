@@ -6,6 +6,7 @@ import { Blog, BlogDocument } from '../schemas/blog.schema';
 import { CreateBlogDto, UpdateBlogDto } from './dto/blog.dto';
 import { PaginationQueryDto } from 'src/config/dto/pagination';
 
+
 @Injectable()
 export class BlogService {
   constructor(@InjectModel(Blog.name) private blogModel: Model<BlogDocument>) {}
@@ -19,15 +20,18 @@ export class BlogService {
     const page = +query?.page || 1;
     const limit = +query?.limit || 10;
     const skip = (page - 1) * limit;
+    const searchQuery = query.search
+    ? { title: { $regex: query.search, $options: 'i' } }
+    : {};
 
     const [data, total] = await Promise.all([
       this.blogModel
-        .find()
+        .find(searchQuery)
         .sort({ createdAt: 'desc' })
         .skip(skip)
         .limit(limit)
         .exec(),
-      this.blogModel.countDocuments(),
+      this.blogModel.countDocuments(searchQuery),
     ]);
 
     return {

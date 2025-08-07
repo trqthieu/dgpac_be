@@ -7,6 +7,7 @@ import {
   Post,
   Put,
   Query,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import { UserRequestService } from './user-request.service';
@@ -19,6 +20,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
+import { Response } from 'express';
 
 @ApiTags('User Requests')
 @Controller('user-requests')
@@ -36,6 +38,22 @@ export class UserRequestController {
   @Get()
   async findAll(@Query() query: PaginationQueryDto) {
     return this.service.findAll(query);
+  }
+
+  // @Get('export')
+  // async exportBlogsToCsv(@Res() res: Response) {
+  //   const csv = await this.service.exportToCsv();
+  //   res.setHeader('Content-Type', 'text/csv');
+  //   res.setHeader('Content-Disposition', 'attachment; filename=user-request.csv');
+  //   res.send(csv);
+  // }
+
+   @Get('export')
+  async exportBlogsToXlsx(@Res() res: Response) {
+    const buffer = await this.service.exportToXlsx();
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', 'attachment; filename=user-request.xlsx');
+    res.send(buffer);
   }
 
 //   @Get(':id')

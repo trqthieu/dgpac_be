@@ -10,6 +10,9 @@ import {
   UpdateUserRequestDto,
 } from './dto/user-request.dto';
 import { PaginationQueryDto } from 'src/config/dto/pagination';
+import { Parser } from 'json2csv';
+import { Response } from 'express'; // if used in controller
+import * as ExcelJS from 'exceljs';
 
 @Injectable()
 export class UserRequestService {
@@ -26,14 +29,17 @@ export class UserRequestService {
     const page = +query?.page || 1;
     const limit = +query?.limit || 10;
     const skip = (page - 1) * limit;
+    const searchQuery = query.search
+      ? { companyName: { $regex: query.search, $options: 'i' } }
+      : {};
 
     const [data, total] = await Promise.all([
       this.userRequestModel
-        .find()
+        .find(searchQuery)
         .sort({ createdAt: 'desc' })
         .skip(skip)
         .limit(limit),
-      this.userRequestModel.countDocuments(),
+      this.userRequestModel.countDocuments(searchQuery),
     ]);
 
     return { data, total, page, totalPages: Math.ceil(total / limit) };
@@ -60,5 +66,59 @@ export class UserRequestService {
     if (result.deletedCount === 0)
       throw new NotFoundException(`UserRequest with id ${id} not found`);
     return { message: 'User request deleted successfully' };
+  }
+
+  async exportToCsv(): Promise<string> {
+    const userRequest = await this.userRequestModel
+      .find()
+      .sort({ createdAt: 'desc' })
+      .exec();
+    const fields = [
+      '_id',
+      'name',
+      'companyName',
+      'email',
+      'phone',
+      'location',
+      'request',
+    ];
+    const parser = new Parser({ fields });
+    const csv = parser.parse(userRequest);
+
+    return csv;
+  }
+
+  async exportToXlsx() {
+    const userRequest = await this.userRequestModel
+      .find()
+      .sort({ createdAt: 'desc' })
+      .exec();
+
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Blogs');
+
+    worksheet.columns = [
+      { header: 'ID', key: '_id', width: 24 },
+      { header: 'Name', key: 'name', width: 20 },
+      { header: 'Company Name', key: 'companyName', width: 20 },
+      { header: 'Email', key: 'email', width: 20 },
+      { header: 'Phone', key: 'phone', width: 20 },
+      { header: 'Location', key: 'location', width: 20 },
+      { header: 'Request', key: 'request', width: 50 },
+    ];
+
+    userRequest.forEach((blog) => {
+      worksheet.addRow({
+        _id: blog._id.toString(),
+        name: blog.name,
+        companyName: blog.companyName,
+        email: blog.email,
+        phone: blog.phone,
+        location: blog.location,
+        request: blog.request,
+      });
+    });
+    const buffer = await workbook.xlsx.writeBuffer();
+    return buffer;
   }
 }

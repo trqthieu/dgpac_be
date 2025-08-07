@@ -17,26 +17,31 @@ export class ProductService {
   }
 
   async findAll(query: PaginationQueryDto) {
-    const page = +query?.page || 1;
-    const limit = +query?.limit || 10;
-    const skip = (page - 1) * limit;
+  const page = +query?.page || 1;
+  const limit = +query?.limit || 10;
+  const skip = (page - 1) * limit;
 
-    const [data, total] = await Promise.all([
-      this.ProductModel.find()
-        .sort({ createdAt: 'desc' })
-        .skip(skip)
-        .limit(limit)
-        .exec(),
-      this.ProductModel.countDocuments(),
-    ]);
+  const searchQuery = query.search
+    ? { title: { $regex: query.search, $options: 'i' } }
+    : {};
 
-    return {
-      data,
-      total,
-      page,
-      totalPages: Math.ceil(total / limit),
-    };
-  }
+  const [data, total] = await Promise.all([
+    this.ProductModel.find(searchQuery)
+      .sort({ createdAt: 'desc' })
+      .skip(skip)
+      .limit(limit)
+      .exec(),
+    this.ProductModel.countDocuments(searchQuery),
+  ]);
+
+  return {
+    data,
+    total,
+    page,
+    totalPages: Math.ceil(total / limit),
+  };
+}
+
 
   async findOne(id: string): Promise<Product> {
     const Product = await this.ProductModel.findById(id).exec();

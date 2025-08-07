@@ -19,14 +19,17 @@ export class ProjectService {
     const page = +query?.page || 1;
     const limit = +query?.limit || 10;
     const skip = (page - 1) * limit;
+    const searchQuery = query.search
+    ? { title: { $regex: query.search, $options: 'i' } }
+    : {};
 
     const [data, total] = await Promise.all([
-      this.ProjectModel.find()
+      this.ProjectModel.find(searchQuery)
         .sort({ createdAt: 'desc' })
         .skip(skip)
         .limit(limit)
         .exec(),
-      this.ProjectModel.countDocuments(),
+      this.ProjectModel.countDocuments(searchQuery),
     ]);
 
     return { data, total, page, totalPages: Math.ceil(total / limit) };
