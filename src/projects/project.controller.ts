@@ -10,7 +10,11 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ProjectService } from './project.service';
-import { CreateProjectDto, UpdateProjectDto } from './dto/project.dto';
+import {
+  CreateProjectDto,
+  ProjectFilterQueryDto,
+  UpdateProjectDto,
+} from './dto/project.dto';
 import { PaginationQueryDto } from 'src/config/dto/pagination';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -31,8 +35,16 @@ export class ProjectController {
   }
 
   @Get()
-  async findAll(@Query() query: PaginationQueryDto) {
+  async findAll(@Query() query: ProjectFilterQueryDto) {
     return this.projectService.findAll(query);
+  }
+
+  @Get(':id/related')
+  async getRelatedProjects(
+    @Param('id') id: string,
+    @Query() query: PaginationQueryDto,
+  ) {
+    return this.projectService.findRelated(id, query);
   }
 
   @Get(':id')

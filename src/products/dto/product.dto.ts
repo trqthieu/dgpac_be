@@ -8,6 +8,14 @@ export class CreateProductDto {
 
   @ApiProperty()
   @IsString()
+  slug: string;
+
+  @ApiProperty()
+  @IsString()
+  readonly content: string;
+
+  @ApiProperty()
+  @IsString()
   readonly description: string;
 
   @ApiProperty()
@@ -28,6 +36,16 @@ export class UpdateProductDto {
   @IsOptional()
   @IsString()
   readonly title?: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  slug?: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  readonly content?: string;
 
   @ApiProperty()
   @IsOptional()

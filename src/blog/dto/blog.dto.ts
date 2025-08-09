@@ -9,11 +9,15 @@ export class CreateBlogDto {
 
   @ApiProperty()
   @IsString()
-  readonly description: string;
+  readonly link: string;
 
   @ApiProperty()
   @IsString()
-  readonly tag: string;
+  readonly description: string;
+
+  // @ApiProperty()
+  // @IsString()
+  // readonly tag: string;
 }
 
 export class UpdateBlogDto {
@@ -25,7 +29,12 @@ export class UpdateBlogDto {
   @ApiProperty()
   @IsOptional()
   @IsString()
-  readonly tag?: string;
+  readonly link?: string;
+
+  // @ApiProperty()
+  // @IsOptional()
+  // @IsString()
+  // readonly tag?: string;
 
   @ApiProperty()
   @IsOptional()

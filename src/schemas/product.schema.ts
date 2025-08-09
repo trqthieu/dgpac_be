@@ -9,6 +9,12 @@ export class Product {
   title: string;
 
   @Prop()
+  slug: string;
+
+  @Prop()
+  content: string;
+
+  @Prop()
   image: string;
   @Prop()
   description: string;

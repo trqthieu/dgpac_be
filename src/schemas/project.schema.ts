@@ -30,6 +30,12 @@ export class Project {
   title: string;
 
   @Prop({ required: true })
+  slug: string;
+
+  @Prop()
+  content: string;
+
+  @Prop({ required: true })
   image: string;
 
   @Prop({ required: true })
