@@ -11,13 +11,13 @@ export class CreateBlogDto {
   @IsString()
   readonly link: string;
 
-  @ApiProperty()
-  @IsString()
-  readonly description: string;
-
   // @ApiProperty()
   // @IsString()
-  // readonly tag: string;
+  // readonly description: string;
+
+  @ApiProperty()
+  @IsString()
+  readonly tag: string;
 }
 
 export class UpdateBlogDto {
@@ -31,13 +31,13 @@ export class UpdateBlogDto {
   @IsString()
   readonly link?: string;
 
-  // @ApiProperty()
-  // @IsOptional()
-  // @IsString()
-  // readonly tag?: string;
-
   @ApiProperty()
   @IsOptional()
   @IsString()
-  readonly description?: string;
+  readonly tag?: string;
+
+  // @ApiProperty()
+  // @IsOptional()
+  // @IsString()
+  // readonly description?: string;
 }

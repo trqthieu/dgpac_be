@@ -12,11 +12,11 @@ export class Blog {
   @Prop()
   link: string;
 
-  // @Prop()
-  // tag: string;
-
   @Prop()
-  description: string;
+  tag: string;
+
+  // @Prop()
+  // description: string;
 }
 
 export const BlogSchema = SchemaFactory.createForClass(Blog);
