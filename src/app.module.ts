@@ -8,6 +8,7 @@ import * as dotenv from 'dotenv';
 import { ProjectModule } from './projects/project.module';
 import { UserRequestModule } from './user-requests/user-request.module';
 import { UploadModule } from './uploads/upload.module';
+import { SeederModule } from './seeder/seeder.module';
 
 dotenv.config();
 
@@ -20,7 +21,8 @@ dotenv.config();
     BlogModule,
     ProjectModule,
     UserRequestModule,
-    UploadModule
+    UploadModule,
+    SeederModule
   ],
 })
 export class AppModule {}
