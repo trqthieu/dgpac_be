@@ -38,17 +38,7 @@ export class AuthController {
     return this.authService.login(loginDto);
   }
 
-  // Request password reset (forgot password)
-  @Post('forgot-password')
-  async forgotPassword(@Body() data: ForgotPasswordDto) {
-    return this.authService.forgotPassword(data.email);
-  }
 
-  // Reset password (using token sent by email)
-  @Post('reset-password')
-  async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
-    return this.authService.resetPassword(resetPasswordDto);
-  }
 
   // Initiate Google OAuth flow
   @Get('google')
@@ -58,14 +48,7 @@ export class AuthController {
   }
 
   // Google OAuth redirect/callback endpoint
-  @Get('google/redirect')
-  @UseGuards(GoogleOAuthGuard)
-  async googleAuthRedirect(@Req() req: Request, @Res() res: Response) {
-    const jwt = await this.authService.oAuthLogin(req.user);
-    console.log('accessToken', jwt.accessToken);
 
-    res.redirect(`${process.env.FRONTEND_URL}?token=${jwt.accessToken}`);
-  }
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()

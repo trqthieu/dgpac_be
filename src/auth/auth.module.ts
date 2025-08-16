@@ -7,8 +7,6 @@ import { AuthController } from './auth.controller';
 import { UsersModule } from '../users/users.module';
 import { LocalStrategy } from './local.strategy';
 import { JwtStrategy } from './jwt.strategy';
-import { MailerService } from 'src/mailer/mailer.service';
-import { GoogleStrategy } from './google.strategy';
 
 @Module({
   imports: [
@@ -23,8 +21,6 @@ import { GoogleStrategy } from './google.strategy';
     AuthService,
     LocalStrategy,
     JwtStrategy,
-    GoogleStrategy,
-    MailerService,
   ],
   controllers: [AuthController],
 })
