@@ -107,15 +107,15 @@ export class UserRequestService {
       { header: 'Request', key: 'request', width: 50 },
     ];
 
-    userRequest.forEach((blog) => {
+    userRequest.forEach((item) => {
       worksheet.addRow({
-        _id: blog._id.toString(),
-        name: blog.name,
-        companyName: blog.companyName,
-        email: blog.email,
-        phone: blog.phone,
-        location: blog.location,
-        request: blog.request,
+        _id: item._id.toString(),
+        name: item.name,
+        companyName: item.companyName,
+        email: item.email,
+        phone: item.phone,
+        location: item.location,
+        request: item.request,
       });
     });
     const buffer = await workbook.xlsx.writeBuffer();
