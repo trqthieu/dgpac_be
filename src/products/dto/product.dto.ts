@@ -23,6 +23,10 @@ export class CreateProductDto {
   readonly image: string;
 
   @ApiProperty()
+  @IsString()
+  readonly linkSharepoint: string;
+
+  @ApiProperty()
   @IsString({ each: true })
   readonly range: string[];
 
@@ -51,6 +55,11 @@ export class UpdateProductDto {
   @IsOptional()
   @IsString()
   readonly image?: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  readonly linkSharepoint?: string;
 
   @ApiProperty()
   @IsOptional()

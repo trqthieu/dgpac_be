@@ -105,6 +105,8 @@ export class UserRequestService {
       { header: 'Phone', key: 'phone', width: 20 },
       { header: 'Location', key: 'location', width: 20 },
       { header: 'Request', key: 'request', width: 50 },
+      { header: 'Safety DataSheet', key: 'safetyDataSheet', width: 50 },
+      { header: 'Packing List', key: 'packingList', width: 50 },
     ];
 
     userRequest.forEach((item) => {
@@ -116,6 +118,8 @@ export class UserRequestService {
         phone: item.phone,
         location: item.location,
         request: item.request,
+        safetyDataSheet: item.safetyDataSheet,
+        packingList: item.packingList,
       });
     });
     const buffer = await workbook.xlsx.writeBuffer();

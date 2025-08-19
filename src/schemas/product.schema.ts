@@ -16,8 +16,12 @@ export class Product {
 
   @Prop()
   image: string;
+
   @Prop()
   description: string;
+
+  @Prop()
+  linkSharepoint: string;
 
   @Prop()
   range: string[];
