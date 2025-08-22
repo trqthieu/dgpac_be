@@ -22,6 +22,8 @@ export enum WorkEnum {
   TRANSPORT = 'transport',
   WAREHOUSING = 'warehousing',
   TRAINING = 'training',
+  LABELLING = 'labelling',
+  DECLARATION = 'declaration',
 }
 
 @Schema({ timestamps: true })
